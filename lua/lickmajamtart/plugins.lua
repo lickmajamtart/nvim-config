@@ -74,9 +74,24 @@ return {
     },
     config = function()
       local lsp = require("lsp-zero").preset({})
+      local cmp = require("cmp")
+
+      cmp.setup({
+        mapping = cmp.mapping.preset.insert({
+          ['<C-p>'] = cmp.mapping.select_prev_item(),
+          ['<C-n>'] = cmp.mapping.select_next_item(),
+          ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+          ['<C-Space>'] = cmp.mapping.complete(),
+        }),
+        sources = cmp.config.sources({
+          { name = 'nvim_lsp' },
+        }),
+      })
+
       lsp.on_attach(function(client, bufnr)
         local opts = { buffer = bufnr, remap = false }
         local km = vim.keymap.set
+
         km("n", "gd", vim.lsp.buf.definition, opts)
         km("n", "K", vim.lsp.buf.hover, opts)
         km("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
@@ -88,6 +103,9 @@ return {
         km("n", "<leader>rn", vim.lsp.buf.rename, opts)
         km("i", "<C-h>", vim.lsp.buf.signature_help, opts)
       end)
+
+      vim.o.completeopt = "menuone,noselect"
+
       lsp.setup()
     end,
   },
